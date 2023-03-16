@@ -1,5 +1,5 @@
 [package]
-name = "portal-exit"
+name = "portal-quit"
 version = "0.1.0"
 edition = "2021"
 
