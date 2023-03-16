@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "portal-quit"
+name = "chronokeep-portal-quit"
 version = "0.1.0"
