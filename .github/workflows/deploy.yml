@@ -15,7 +15,7 @@ jobs:
 
             # Generate version information
             - name: Generate version text file
-              run: git describe --tag > version.txt
+              run: git describe --tag > quit-version.txt
 
             # Set an environment variable to the tag we want to use to describe this release.
             - name: Get tag environment variable.
@@ -35,12 +35,12 @@ jobs:
               run: chmod +x ./setup_cross.sh && ./setup_cross.sh
 
             - name: Tar the version and executable files for armv7
-              run: tar -cvf armv7-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar -C target/armv7-unknown-linux-gnueabihf/release/ chronokeep-portal ../../../version.txt
+              run: tar -cvf armv7-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar -C target/armv7-unknown-linux-gnueabihf/release/ chronokeep-portal-quit ../../../quit-version.txt
             - name: Zip armv7 tar
               run: gzip armv7-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar
 
             - name: Tar the version and executable files for amd64
-              run: tar -cvf amd64-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar -C target/release/ chronokeep-portal ../../version.txt
+              run: tar -cvf amd64-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar -C target/release/ chronokeep-portal-quit ../../quit-version.txt
             - name: Zip amd64 tar
               run: gzip amd64-linux-${{ steps.release-version-actual.outputs.FILE_RELEASE_VERSION }}.tar
                 
