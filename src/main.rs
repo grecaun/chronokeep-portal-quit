@@ -1,11 +1,12 @@
-use std::{net::{UdpSocket, Ipv4Addr, TcpStream}, str::FromStr, time::Duration, io::{Write, Read}};
+use std::{env, io::{self, BufRead}, net::{Ipv4Addr, TcpStream, UdpSocket}, str::FromStr, time::Duration};
 
 pub const ZERO_CONF_REQUEST: &str = "[DISCOVER_CHRONO_SERVER_REQUEST]";
 pub const ZERO_CONF_MULTICAST_ADDR: &str = "224.0.44.88";
 pub const ZERO_CONF_PORT: u16 = 4488;
 pub const ZERO_CONF_URI: &str = "224.0.44.88:4488";
 
-pub const QUIT_REQUEST: &str = "{\"command\":\"quit\"}";
+pub mod requests;
+pub mod notifications;
 
 fn main() {
     println!("Attempting to shut down local portal.");
@@ -85,11 +86,50 @@ fn main() {
             return;
         }
     };
-    println!("Sending quit command.");
-    match sock.write(QUIT_REQUEST.as_bytes()) {
-        Ok(num) => {
-            println!("Successfully sent {num} bytes as shutdown command.");
+    /*
+        Check which notification/command to send. Default to Quit.
+     */
+    let args: Vec<String> = env::args().collect();
+    let mut request: requests::Request = requests::Request::Quit;
+    let mut msg = "Sending quit command.";
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "d" | "disconnected" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsDisconnected };
+                msg = "Sending UPS disconnected notification.";
+            },
+            "c" | "connected" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsConnected };
+                msg = "Sending UPS connected notification.";
+            },
+            "b" | "onbattery" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsOnBattery };
+                msg = "Sending UPS on battery notification.";
+            },
+            "l" | "lowbattery" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsLowBattery };
+                msg = "Sending UPS low battery notification.";
+            },
+            "o" | "online" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsOnline };
+                msg = "Sending UPS online notification.";
+            },
+            "h" | "hightemp" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::HighTemp };
+                msg = "Sending high temp notification.";
+            },
+            "m" | "maxtemp" => {
+                request = requests::Request::SetNoficiation { notification: notifications::Notification::MaxTemp };
+                msg = "Sending max temp notification.";
+            },
+            arg => {
+                println!("Unknown argument provided. {arg}");
+            }
         }
+    }
+    println!("{msg}");
+    match serde_json::to_writer(&sock, &request) {
+        Ok(_) => {},
         Err(e) => {
             println!("Error writing quit command. {e}");
             return;
@@ -97,7 +137,8 @@ fn main() {
     };
     println!("Waiting to see if the socket responds.");
     let mut recvd: String = Default::default();
-    match sock.read_to_string(&mut recvd) {
+    let mut reader = io::BufReader::new(&mut sock);
+    match reader.read_line(&mut recvd) {
         Ok(num) => {
             println!("Received {num} bytes.");
             println!("Message received from server: {recvd}");
