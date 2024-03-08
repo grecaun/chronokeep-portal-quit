@@ -95,31 +95,31 @@ fn main() {
     if args.len() > 1 {
         match args[1].as_str() {
             "d" | "disconnected" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsDisconnected };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::UpsDisconnected };
                 msg = "Sending UPS disconnected notification.";
             },
             "c" | "connected" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsConnected };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::UpsConnected };
                 msg = "Sending UPS connected notification.";
             },
             "b" | "onbattery" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsOnBattery };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::UpsOnBattery };
                 msg = "Sending UPS on battery notification.";
             },
             "l" | "lowbattery" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsLowBattery };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::UpsLowBattery };
                 msg = "Sending UPS low battery notification.";
             },
             "o" | "online" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::UpsOnline };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::UpsOnline };
                 msg = "Sending UPS online notification.";
             },
             "h" | "hightemp" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::HighTemp };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::HighTemp };
                 msg = "Sending high temp notification.";
             },
             "m" | "maxtemp" => {
-                request = requests::Request::SetNoficiation { notification: notifications::Notification::MaxTemp };
+                request = requests::Request::SetNoficiation { kind: notifications::Notification::MaxTemp };
                 msg = "Sending max temp notification.";
             },
             arg => {

@@ -7,6 +7,6 @@ use crate::notifications;
 pub enum Request {
     Quit,
     SetNoficiation {
-        notification: notifications::Notification,
+        kind: notifications::Notification,
     },
 }
